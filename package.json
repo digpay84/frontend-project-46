@@ -1,0 +1,27 @@
+{
+  "name": "@hexlet/code",
+  "version": "1.0.0",
+  "description": "Вычислитель отличий на JS",
+  "homepage": "https://github.com/digpay84/frontend-project-46#readme",
+  "bugs": {
+    "url": "https://github.com/digpay84/frontend-project-46/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/digpay84/frontend-project-46.git"
+  },
+  "license": "ISC",
+  "author": "Dmitry Levchenko",
+  "type": "module",
+  "bin": {
+    "gendiff": "./gendiff.js"
+  },
+  "main": "gendiff.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "commander": "^14.0.2",
+    "lodash": "^4.17.21"
+  }
+}
