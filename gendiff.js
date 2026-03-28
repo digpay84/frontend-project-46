@@ -1,6 +1,6 @@
-import { Command } from "commander";
-import _ from 'lodash';
-import fs from 'fs';
+import { Command } from 'commander';
+import fs from 'node:fs';
+import { genDiff, formatDiff } from './src/genDiff.js';
 
 const program = new Command();
 
@@ -11,32 +11,14 @@ program
   .arguments('<filepath1> <filepath2>')
   .option('-f, --format [type]', 'output format')
   .action((filepath1, filepath2) => {
+    const file1 = fs.readFileSync(filepath1, 'utf8');
+    const file2 = fs.readFileSync(filepath2, 'utf8');
 
-    console.log(`Comparing ${filepath1} and ${filepath2}`);
-    const file1 = fs.readFileSync('file1.json', 'utf8');
-    const json1 = JSON.parse(file1)
-    console.log(json1)
+    const data1 = JSON.parse(file1);
+    const data2 = JSON.parse(file2);
 
+    const diff = genDiff(data1, data2);
+    console.log(formatDiff(diff));
   });
 
-
-program.parse()
-
-const options = program.opts()
-
-
-
-
-const obj = { z: 1, a: 2, m: 3, b: 4 };
-
-function sortObjectKeys(obj, order = 'asc') {
-  return _.chain(obj)
-    .toPairs()
-    .orderBy([0], [order === 'asc' ? 'asc' : 'desc'])
-    .fromPairs()
-    .value()
-}
-
-console.log(sortObjectKeys(obj))
-
-
+program.parse();
