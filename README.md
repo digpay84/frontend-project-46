@@ -18,6 +18,8 @@ npm install
 
 ```bash
 gendiff filepath1.json filepath2.json
+gendiff filepath1.yml filepath2.yml
+gendiff filepath1.yaml filepath2.yaml
 ```
 
 ### Пример работы
@@ -27,7 +29,7 @@ gendiff filepath1.json filepath2.json
 ### Пример вывода
 
 ```
-gendiff file1.json file2.json
+gendiff file1.yml file2.yml
 
 {
   - follow: false

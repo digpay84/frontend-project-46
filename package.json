@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "commander": "^14.0.2",
+    "js-yaml": "^4.1.1",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
