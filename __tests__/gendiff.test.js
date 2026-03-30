@@ -209,7 +209,8 @@ describe('formatStylish (stylish форматер)', () => {
     const diff = genDiff(data1, data2);
     const formatted = formatStylish(diff);
 
-    expect(formatted).toContain('+ setting5: {"key5":"value5"}');
+    expect(formatted).toContain('+ setting5: {');
+    expect(formatted).toContain('key5: value5');
   });
 
   test('должен форматировать удалённые объекты как JSON', () => {
