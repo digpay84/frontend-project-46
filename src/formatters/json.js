@@ -63,7 +63,7 @@ function formatJson(diff) {
  */
 function formatJsonString(diff) {
   const result = formatJson(diff);
-  return JSON.stringify(result, null, 2);
+  return JSON.stringify(result, null, 4);
 }
 
 export { formatJson, formatJsonString };
