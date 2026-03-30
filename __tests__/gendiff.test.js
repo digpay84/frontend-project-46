@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import yaml from 'js-yaml';
-import { genDiff, formatDiff } from '../src/genDiff.js';
+import { genDiff } from '../src/genDiff.js';
 import { parseFile } from '../src/parsers.js';
 import formatStylish from '../src/formatters/stylish.js';
 import formatPlain from '../src/formatters/plain.js';

@@ -2,7 +2,7 @@ install:
 	npm install
 
 lint:
-	npx eslint gendiff.js
+	npx eslint .
 
 test:
 	npm test
