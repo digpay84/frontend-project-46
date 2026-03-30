@@ -22,6 +22,7 @@ gendiff filepath1.yml filepath2.yml
 gendiff filepath1.yaml filepath2.yaml
 gendiff -f stylish filepath1.json filepath2.json  # формат stylish (по умолчанию)
 gendiff -f plain filepath1.json filepath2.json    # формат plain
+gendiff -f json filepath1.json filepath2.json     # формат json
 ```
 
 ### Пример работы
@@ -96,6 +97,57 @@ Property 'group2' was removed
 Property 'group3' was added with value: [complex value]
 ```
 
+### Пример вывода (формат json)
+
+```
+gendiff --format json nested1.json nested2.json
+
+{
+  "common": {
+    "status": "nested",
+    "value": {
+      "follow": {
+        "status": "added",
+        "value": false
+      },
+      "setting1": {
+        "status": "unchanged",
+        "value": "Value 1"
+      },
+      "setting2": {
+        "status": "removed",
+        "value": 200
+      },
+      "setting3": {
+        "status": "changed",
+        "value1": true,
+        "value2": null
+      }
+    }
+  },
+  "group2": {
+    "status": "removed",
+    "value": {
+      "abc": 12345,
+      "deep": {
+        "id": 45
+      }
+    }
+  },
+  "group3": {
+    "status": "added",
+    "value": {
+      "deep": {
+        "id": {
+          "number": 45
+        }
+      },
+      "fee": 100500
+    }
+  }
+}
+```
+
 ### Описание форматов вывода
 
 #### stylish (формат по умолчанию)
@@ -113,6 +165,16 @@ Property 'group3' was added with value: [complex value]
 - `Property '<путь>' was updated. From <старое> to <новое>` — свойство изменено
 - `[complex value]` — обозначение сложного значения (объекта)
 - Для вложенных свойств указывается полный путь через точку (например, `common.setting6.doge.wow`)
+
+#### json
+
+Структурированный вывод в формате JSON. Каждый ключ содержит объект со свойствами:
+
+- `status: "added"` — свойство добавлено, есть поле `value`
+- `status: "removed"` — свойство удалено, есть поле `value`
+- `status: "unchanged"` — свойство не изменено, есть поле `value`
+- `status: "changed"` — свойство изменено, есть поля `value1` и `value2`
+- `status: "nested"` — вложенный объект, есть поле `value` с рекурсивной структурой
 
 ### Лицензия
 

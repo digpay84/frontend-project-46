@@ -7,6 +7,7 @@ import { genDiff, formatDiff } from '../src/genDiff.js';
 import { parseFile } from '../src/parsers.js';
 import formatStylish from '../src/formatters/stylish.js';
 import formatPlain from '../src/formatters/plain.js';
+import formatJsonString from '../src/formatters/json.js';
 import { getFormatter } from '../src/formatters/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -307,8 +308,116 @@ describe('getFormatter', () => {
     expect(formatter).toBe(formatPlain);
   });
 
+  test('должен возвращать json форматер', () => {
+    const formatter = getFormatter('json');
+    expect(formatter).toBe(formatJsonString);
+  });
+
   test('должен выбрасывать ошибку для неизвестного формата', () => {
     expect(() => getFormatter('unknown')).toThrow('Unknown format: unknown');
+  });
+});
+
+describe('formatJsonString (json форматер)', () => {
+  test('должен возвращать валидный JSON', () => {
+    const data1 = readFixture('nested1.json');
+    const data2 = readFixture('nested2.json');
+    const diff = genDiff(data1, data2);
+    const formatted = formatJsonString(diff);
+    const parsed = JSON.parse(formatted);
+
+    expect(parsed).toBeDefined();
+    expect(typeof parsed).toBe('object');
+  });
+
+  test('должен форматировать добавленные свойства', () => {
+    const data1 = readFixture('nested1.json');
+    const data2 = readFixture('nested2.json');
+    const diff = genDiff(data1, data2);
+    const formatted = formatJsonString(diff);
+    const parsed = JSON.parse(formatted);
+
+    expect(parsed.common.value.follow).toEqual({
+      status: 'added',
+      value: false,
+    });
+  });
+
+  test('должен форматировать удалённые свойства', () => {
+    const data1 = readFixture('nested1.json');
+    const data2 = readFixture('nested2.json');
+    const diff = genDiff(data1, data2);
+    const formatted = formatJsonString(diff);
+    const parsed = JSON.parse(formatted);
+
+    expect(parsed.group2).toEqual({
+      status: 'removed',
+      value: {
+        abc: 12345,
+        deep: {
+          id: 45,
+        },
+      },
+    });
+  });
+
+  test('должен форматировать изменённые свойства', () => {
+    const data1 = readFixture('nested1.json');
+    const data2 = readFixture('nested2.json');
+    const diff = genDiff(data1, data2);
+    const formatted = formatJsonString(diff);
+    const parsed = JSON.parse(formatted);
+
+    expect(parsed.common.value.setting3).toEqual({
+      status: 'changed',
+      value1: true,
+      value2: null,
+    });
+  });
+
+  test('должен форматировать неизменённые свойства', () => {
+    const data1 = readFixture('nested1.json');
+    const data2 = readFixture('nested2.json');
+    const diff = genDiff(data1, data2);
+    const formatted = formatJsonString(diff);
+    const parsed = JSON.parse(formatted);
+
+    expect(parsed.common.value.setting1).toEqual({
+      status: 'unchanged',
+      value: 'Value 1',
+    });
+  });
+
+  test('должен форматировать вложенные структуры', () => {
+    const data1 = readFixture('nested1.json');
+    const data2 = readFixture('nested2.json');
+    const diff = genDiff(data1, data2);
+    const formatted = formatJsonString(diff);
+    const parsed = JSON.parse(formatted);
+
+    expect(parsed.common.status).toBe('nested');
+    expect(parsed.common.value).toBeDefined();
+    expect(parsed.common.value.setting6.status).toBe('nested');
+    expect(parsed.common.value.setting6.value.doge.status).toBe('nested');
+  });
+
+  test('должен сохранять значения объектов', () => {
+    const data1 = readFixture('nested1.json');
+    const data2 = readFixture('nested2.json');
+    const diff = genDiff(data1, data2);
+    const formatted = formatJsonString(diff);
+    const parsed = JSON.parse(formatted);
+
+    expect(parsed.common.value.setting5.value).toEqual({
+      key5: 'value5',
+    });
+  });
+
+  test('должен возвращать строковый тип', () => {
+    const diff = genDiff(readFixture('nested1.json'), readFixture('nested2.json'));
+    const formatted = formatJsonString(diff);
+
+    expect(typeof formatted).toBe('string');
   });
 });
 
@@ -354,6 +463,18 @@ describe('Поддержка YAML с вложенными структурами
 
     expect(formatted).toContain("Property 'common.follow' was added with value: false");
     expect(formatted).toContain("Property 'group2' was removed");
+  });
+
+  test('должен форматировать diff для YAML файлов в json', () => {
+    const data1 = readFixture('nested1.yml');
+    const data2 = readFixture('nested2.yml');
+    const diff = genDiff(data1, data2);
+    const formatted = formatJsonString(diff);
+    const parsed = JSON.parse(formatted);
+
+    expect(parsed.common.status).toBe('nested');
+    expect(parsed.common.value.follow.status).toBe('added');
+    expect(parsed.group2.status).toBe('removed');
   });
 });
 
