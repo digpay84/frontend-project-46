@@ -1,7 +1,21 @@
 import _ from 'lodash';
+import formatStylish from './formatters/stylish.js';
 
 /**
- * Сравнивает два объекта и возвращает массив различий
+ * Сравнивает два значения и возвращает информацию о различиях
+ * @param {*} value1 - первое значение
+ * @param {*} value2 - второе значение
+ * @returns {Object} - объект с информацией о различиях
+ */
+function compareValues(value1, value2) {
+  if (_.isEqual(value1, value2)) {
+    return { status: 'unchanged', value: value1 };
+  }
+  return { status: 'changed', value1, value2 };
+}
+
+/**
+ * Рекурсивно сравнивает два объекта и возвращает массив различий
  * @param {Object} data1 - первый объект
  * @param {Object} data2 - второй объект
  * @returns {Array} - массив объектов с информацией о различиях
@@ -15,63 +29,38 @@ function genDiff(data1, data2) {
   return sortedKeys.map((key) => {
     const hasKey1 = _.has(data1, key);
     const hasKey2 = _.has(data2, key);
+
+    if (!hasKey1) {
+      return { key, value: data2[key], status: 'added' };
+    }
+    if (!hasKey2) {
+      return { key, value: data1[key], status: 'removed' };
+    }
+
     const value1 = data1[key];
     const value2 = data2[key];
 
-    if (!hasKey1) {
-      return { key, value: value2, status: 'added' };
+    // Если оба значения - объекты (не массивы и не null), рекурсивно сравниваем
+    if (_.isPlainObject(value1) && _.isPlainObject(value2)) {
+      return {
+        key,
+        status: 'nested',
+        children: genDiff(value1, value2),
+      };
     }
-    if (!hasKey2) {
-      return { key, value: value1, status: 'removed' };
-    }
-    if (_.isEqual(value1, value2)) {
-      return { key, value: value1, status: 'unchanged' };
-    }
-    return { key, value1, value2, status: 'changed' };
+
+    return { key, ...compareValues(value1, value2) };
   });
 }
 
 /**
- * Форматирует массив различий в строку
+ * Форматирует массив различий в строку (stylish форматер по умолчанию)
  * @param {Array} diff - массив различий
  * @returns {string} - отформатированная строка
  */
 function formatDiff(diff) {
-  const lines = diff.map((item) => {
-    if (item.status === 'added') {
-      return `  + ${item.key}: ${formatValue(item.value)}`;
-    }
-    if (item.status === 'removed') {
-      return `  - ${item.key}: ${formatValue(item.value)}`;
-    }
-    if (item.status === 'unchanged') {
-      return `    ${item.key}: ${formatValue(item.value)}`;
-    }
-    if (item.status === 'changed') {
-      return [
-        `  - ${item.key}: ${formatValue(item.value1)}`,
-        `  + ${item.key}: ${formatValue(item.value2)}`,
-      ].join('\n');
-    }
-    return '';
-  });
-
-  return ['{', lines.join('\n'), '}'].join('\n');
-}
-
-/**
- * Форматирует значение для вывода
- * @param {*} value - значение
- * @returns {string} - отформатированное значение
- */
-function formatValue(value) {
-  if (_.isObject(value) && !_.isNull(value)) {
-    return JSON.stringify(value);
-  }
-  if (_.isBoolean(value)) {
-    return value;
-  }
-  return value;
+  return formatStylish(diff);
 }
 
 export { genDiff, formatDiff };
+export default genDiff;

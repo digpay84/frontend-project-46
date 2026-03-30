@@ -1,6 +1,7 @@
 import { Command } from 'commander';
 import fs from 'node:fs';
-import { genDiff, formatDiff } from './src/genDiff.js';
+import { genDiff } from './src/genDiff.js';
+import { getFormatter } from './src/formatters/index.js';
 import { parseFile } from './src/parsers.js';
 
 const program = new Command();
@@ -10,8 +11,8 @@ program
   .description('Compares two configuration files and shows a difference.')
   .version('1.0.0', '-V, --version', 'output the version number')
   .arguments('<filepath1> <filepath2>')
-  .option('-f, --format [type]', 'output format')
-  .action((filepath1, filepath2) => {
+  .option('-f, --format [type]', 'output format (stylish, plain)', 'stylish')
+  .action((filepath1, filepath2, options) => {
     const file1 = fs.readFileSync(filepath1, 'utf8');
     const file2 = fs.readFileSync(filepath2, 'utf8');
 
@@ -19,7 +20,10 @@ program
     const data2 = parseFile(file2, filepath2);
 
     const diff = genDiff(data1, data2);
-    console.log(formatDiff(diff));
+    const format = options.format || 'stylish';
+    const formatter = getFormatter(format);
+
+    console.log(formatter(diff));
   });
 
 program.parse();
