@@ -175,7 +175,3 @@ gendiff --format json nested1.json nested2.json
 - `status: "unchanged"` — свойство не изменено, есть поле `value`
 - `status: "changed"` — свойство изменено, есть поля `value1` и `value2`
 - `status: "nested"` — вложенный объект, есть поле `value` с рекурсивной структурой
-
-### Лицензия
-
-ISC
