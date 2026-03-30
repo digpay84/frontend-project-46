@@ -21,14 +21,14 @@ function formatPrimitiveValue(value) {
 /**
  * Форматирует объект в несколько строк с рекурсивным раскрытием
  * @param {Object} obj - объект
- * @param {string} baseIndent - базовый отступ
+ * @param {string} contentIndent - отступ для содержимого
  * @returns {string} - отформатированные строки
  */
-function formatObjectMultiline(obj, baseIndent) {
+function formatObjectMultiline(obj, contentIndent) {
   const indentSize = 4;
 
   const lines = Object.entries(obj).map(([key, value]) => {
-    const indent = baseIndent + ' '.repeat(indentSize);
+    const indent = contentIndent + ' '.repeat(indentSize);
     if (_.isPlainObject(value)) {
       const nestedLines = formatObjectMultiline(value, indent);
       return [
@@ -65,12 +65,13 @@ function formatNode(item, depth) {
   }
 
   const valueIndent = getValueIndent(depth);
-  const objectBaseIndent = valueIndent.slice(0, -2); // Убираем 2 символа для префикса
+  // Для содержимого объектов используем тот же отступ что и valueIndent
+  const objectContentIndent = valueIndent;
 
   if (item.status === 'added') {
     // Если добавленное значение — объект, форматируем его в несколько строк
     if (_.isPlainObject(item.value)) {
-      const lines = formatObjectMultiline(item.value, valueIndent);
+      const lines = formatObjectMultiline(item.value, objectContentIndent);
       return [
         `${valueIndent}+ ${item.key}: {`,
         lines,
@@ -83,7 +84,7 @@ function formatNode(item, depth) {
   if (item.status === 'removed') {
     // Если удалённое значение — объект, форматируем его в несколько строк
     if (_.isPlainObject(item.value)) {
-      const lines = formatObjectMultiline(item.value, valueIndent);
+      const lines = formatObjectMultiline(item.value, objectContentIndent);
       return [
         `${valueIndent}- ${item.key}: {`,
         lines,
@@ -96,7 +97,7 @@ function formatNode(item, depth) {
   if (item.status === 'unchanged') {
     // Если неизменённое значение — объект, форматируем его в несколько строк
     if (_.isPlainObject(item.value)) {
-      const lines = formatObjectMultiline(item.value, valueIndent);
+      const lines = formatObjectMultiline(item.value, objectContentIndent);
       return [
         `${valueIndent}  ${item.key}: {`,
         lines,
@@ -109,12 +110,12 @@ function formatNode(item, depth) {
   if (item.status === 'changed') {
     // Если старое значение — объект, форматируем его в несколько строк
     if (_.isPlainObject(item.value1)) {
-      const removedLines = formatObjectMultiline(item.value1, valueIndent);
+      const removedLines = formatObjectMultiline(item.value1, objectContentIndent);
       const result = [`${valueIndent}- ${item.key}: {`, removedLines, `${valueIndent}  }`];
 
       // Если новое значение — объект, форматируем его в несколько строк
       if (_.isPlainObject(item.value2)) {
-        const addedLines = formatObjectMultiline(item.value2, valueIndent);
+        const addedLines = formatObjectMultiline(item.value2, objectContentIndent);
         result.push(`${valueIndent}+ ${item.key}: {`);
         result.push(addedLines);
         result.push(`${valueIndent}  }`);
@@ -129,7 +130,7 @@ function formatNode(item, depth) {
 
     // Если новое значение — объект, форматируем его в несколько строк
     if (_.isPlainObject(item.value2)) {
-      const addedLines = formatObjectMultiline(item.value2, valueIndent);
+      const addedLines = formatObjectMultiline(item.value2, objectContentIndent);
       return [
         removedLine,
         `${valueIndent}+ ${item.key}: {`,

@@ -228,7 +228,8 @@
 <a name='L163'></a><a href='#L163'>163</a>
 <a name='L164'></a><a href='#L164'>164</a>
 <a name='L165'></a><a href='#L165'>165</a>
-<a name='L166'></a><a href='#L166'>166</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L166'></a><a href='#L166'>166</a>
+<a name='L167'></a><a href='#L167'>167</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -295,6 +296,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">84x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">84x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">84x</span>
@@ -416,14 +418,14 @@ function formatPrimitiveValue(value) {
 /**
  * Форматирует объект в несколько строк с рекурсивным раскрытием
  * @param {Object} obj - объект
- * @param {string} baseIndent - базовый отступ
+ * @param {string} contentIndent - отступ для содержимого
  * @returns {string} - отформатированные строки
  */
-function formatObjectMultiline(obj, baseIndent) {
+function formatObjectMultiline(obj, contentIndent) {
   const indentSize = 4;
 &nbsp;
   const lines = Object.entries(obj).map(([key, value]) =&gt; {
-    const indent = baseIndent + ' '.repeat(indentSize);
+    const indent = contentIndent + ' '.repeat(indentSize);
     if (_.isPlainObject(value)) {
       const nestedLines = formatObjectMultiline(value, indent);
       return [
@@ -460,12 +462,13 @@ function formatNode(item, depth) {
   }
 &nbsp;
   const valueIndent = getValueIndent(depth);
-  const objectBaseIndent = valueIndent.slice(0, -2); // Убираем 2 символа для префикса
+  // Для содержимого объектов используем тот же отступ что и valueIndent
+  const objectContentIndent = valueIndent;
 &nbsp;
   if (item.status === 'added') {
     // Если добавленное значение — объект, форматируем его в несколько строк
     if (_.isPlainObject(item.value)) {
-      const lines = formatObjectMultiline(item.value, valueIndent);
+      const lines = formatObjectMultiline(item.value, objectContentIndent);
       return [
         `${valueIndent}+ ${item.key}: {`,
         lines,
@@ -478,7 +481,7 @@ function formatNode(item, depth) {
   if (item.status === 'removed') {
     // Если удалённое значение — объект, форматируем его в несколько строк
     if (_.isPlainObject(item.value)) {
-      const lines = formatObjectMultiline(item.value, valueIndent);
+      const lines = formatObjectMultiline(item.value, objectContentIndent);
       return [
         `${valueIndent}- ${item.key}: {`,
         lines,
@@ -491,7 +494,7 @@ function formatNode(item, depth) {
   if (item.status === 'unchanged') {
     // Если неизменённое значение — объект, форматируем его в несколько строк
     <span class="missing-if-branch" title="if path not taken" >I</span>if (_.isPlainObject(item.value)) {
-      const lines = <span class="cstat-no" title="statement not covered" >formatObjectMultiline(item.value, valueIndent);</span>
+      const lines = <span class="cstat-no" title="statement not covered" >formatObjectMultiline(item.value, objectContentIndent);</span>
 <span class="cstat-no" title="statement not covered" >      return [</span>
         `${valueIndent}  ${item.key}: {`,
         lines,
@@ -504,12 +507,12 @@ function formatNode(item, depth) {
   <span class="missing-if-branch" title="else path not taken" >E</span>if (item.status === 'changed') {
     // Если старое значение — объект, форматируем его в несколько строк
     if (_.isPlainObject(item.value1)) {
-      const removedLines = formatObjectMultiline(item.value1, valueIndent);
+      const removedLines = formatObjectMultiline(item.value1, objectContentIndent);
       const result = [`${valueIndent}- ${item.key}: {`, removedLines, `${valueIndent}  }`];
 &nbsp;
       // Если новое значение — объект, форматируем его в несколько строк
       <span class="missing-if-branch" title="if path not taken" >I</span>if (_.isPlainObject(item.value2)) {
-        const addedLines = <span class="cstat-no" title="statement not covered" >formatObjectMultiline(item.value2, valueIndent);</span>
+        const addedLines = <span class="cstat-no" title="statement not covered" >formatObjectMultiline(item.value2, objectContentIndent);</span>
 <span class="cstat-no" title="statement not covered" >        result.push(`${valueIndent}+ ${item.key}: {`);</span>
 <span class="cstat-no" title="statement not covered" >        result.push(addedLines);</span>
 <span class="cstat-no" title="statement not covered" >        result.push(`${valueIndent}  }`);</span>
@@ -524,7 +527,7 @@ function formatNode(item, depth) {
 &nbsp;
     // Если новое значение — объект, форматируем его в несколько строк
     <span class="missing-if-branch" title="if path not taken" >I</span>if (_.isPlainObject(item.value2)) {
-      const addedLines = <span class="cstat-no" title="statement not covered" >formatObjectMultiline(item.value2, valueIndent);</span>
+      const addedLines = <span class="cstat-no" title="statement not covered" >formatObjectMultiline(item.value2, objectContentIndent);</span>
 <span class="cstat-no" title="statement not covered" >      return [</span>
         removedLine,
         `${valueIndent}+ ${item.key}: {`,
@@ -565,7 +568,7 @@ export default formatStylish;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-03-30T21:41:58.244Z
+                at 2026-03-30T21:50:43.385Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
