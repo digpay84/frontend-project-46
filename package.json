@@ -14,7 +14,7 @@
   "author": "Dmitry Levchenko",
   "type": "module",
   "bin": {
-    "gendiff": "./gendiff.js"
+    "gendiff": "gendiff.js"
   },
   "main": "gendiff.js",
   "scripts": {
