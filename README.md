@@ -2,7 +2,7 @@
 
 [![Actions Status](https://github.com/digpay84/frontend-project-46/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/digpay84/frontend-project-46/actions)
 [![Tests](https://github.com/digpay84/frontend-project-46/actions/workflows/tests.yml/badge.svg)](https://github.com/digpay84/frontend-project-46/actions/workflows/tests.yml)
-[![Test Coverage](https://sonarcloud.io/api/project_badges/measure?project=frontend-project-46&metric=coverage)](https://sonarcloud.io/dashboard?id=digpay84_frontend-project-46)
+[![SonarQube Cloud](https://sonarcloud.io/images/project_badges/sonarcloud-light.svg)](https://sonarcloud.io/summary/new_code?id=digpay84_frontend-project-46)
 
 ## gendiff
 
