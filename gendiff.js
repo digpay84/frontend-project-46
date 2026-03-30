@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { Command } from 'commander';
 import fs from 'node:fs';
 import { genDiff } from './src/genDiff.js';
