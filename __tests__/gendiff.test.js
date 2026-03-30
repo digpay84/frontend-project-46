@@ -219,7 +219,10 @@ describe('formatStylish (stylish форматер)', () => {
     const diff = genDiff(data1, data2);
     const formatted = formatStylish(diff);
 
-    expect(formatted).toContain('- group2: {"abc":12345,"deep":{"id":45}}');
+    expect(formatted).toContain('- group2: {');
+    expect(formatted).toContain('abc: 12345');
+    expect(formatted).toContain('deep: {');
+    expect(formatted).toContain('id: 45');
   });
 });
 
