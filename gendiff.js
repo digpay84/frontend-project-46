@@ -13,13 +13,9 @@ program
   .description('Compares two configuration files and shows a difference.')
   .version('1.0.0', '-V, --version', 'output the version number')
   .option('-f, --format [type]', 'output format (stylish, plain, json)', 'stylish')
-  .argument('<filepath1>')
-  .argument('<filepath2>')
+  .argument('<filepath1>', 'first file path')
+  .argument('<filepath2>', 'second file path')
   .action((filepath1, filepath2, options) => {
-    if (!filepath1 || !filepath2) {
-      program.error('missing required argument \'filepath1\'');
-    }
-
     const file1 = fs.readFileSync(filepath1, 'utf8');
     const file2 = fs.readFileSync(filepath2, 'utf8');
 
@@ -33,4 +29,11 @@ program
     console.log(formatter(diff));
   });
 
-program.parse(process.argv);
+// Выполнять parse только при прямом запуске CLI, а не при импорте модуля
+const isMainModule = process.argv[1]?.endsWith('gendiff.js');
+if (isMainModule) {
+  program.parse();
+}
+
+export { program };
+export default program;
