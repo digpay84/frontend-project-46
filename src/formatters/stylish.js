@@ -63,8 +63,8 @@ function formatNode(item, depth) {
       `${getKeyIndent(depth)}}`,
     ];
   }
-
-  const valueIndent = getValueIndent(depth);
+  console.log(depth)
+  const valueIndent = getValueIndent(depth > 1 ? depth + 2 : depth);
   // Для содержимого объектов используем тот же отступ что и valueIndent
   const objectContentIndent = valueIndent;
 
