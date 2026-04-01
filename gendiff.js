@@ -29,11 +29,6 @@ program
     console.log(formatter(diff));
   });
 
-// Выполнять parse только при прямом запуске CLI, а не при импорте модуля
-const isMainModule = process.argv[1]?.endsWith('gendiff.js');
-if (isMainModule) {
-  program.parse();
-}
+program.parse();
 
-export { program };
-export default program;
+
