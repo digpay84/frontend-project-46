@@ -67,8 +67,7 @@ function formatNode(item, depth) {
 
 
   const valueIndent = getValueIndent(depth);
-  // Для содержимого объектов используем тот же отступ что и valueIndent
-  console.log(depth)
+  // Для содержимого объектов используем тот же отступ что и valueIndent  
   const objectContentIndent = ' '.repeat(depth * indentSize + 4);
 
   if (item.status === 'added') {
