@@ -13,8 +13,7 @@ program
   .description('Compares two configuration files and shows a difference.')
   .version('1.0.0', '-V, --version', 'output the version number')
   .option('-f, --format [type]', 'output format (stylish, plain, json)', 'stylish')
-  .argument('[filepath1]', 'first file path')
-  .argument('[filepath2]', 'second file path')
+  .arguments('<filepath1> <filepath2>')
   .action((filepath1, filepath2, options) => {
     if (!filepath1 || !filepath2) {
       program.error('missing required argument \'filepath1\'');
@@ -33,4 +32,4 @@ program
     console.log(formatter(diff));
   });
 
-program.parse();
+program.parse(process.argv);
