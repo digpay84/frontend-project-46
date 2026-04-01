@@ -56,6 +56,7 @@ function formatNode(item, depth) {
   const getValueIndent = (d) => ' '.repeat(d * indentSize + 2);
 
   if (item.status === 'nested') {
+
     const formattedChildren = formatStylish(item.children, depth + 1);
     return [
       `${getKeyIndent(depth)}${item.key}: {`,
@@ -63,10 +64,12 @@ function formatNode(item, depth) {
       `${getKeyIndent(depth)}}`,
     ];
   }
-  console.log(depth)
-  const valueIndent = getValueIndent(depth > 1 ? depth + 2 : depth);
+
+
+  const valueIndent = getValueIndent(depth);
   // Для содержимого объектов используем тот же отступ что и valueIndent
-  const objectContentIndent = valueIndent;
+  console.log(depth)
+  const objectContentIndent = ' '.repeat(depth * indentSize + 4);
 
   if (item.status === 'added') {
     // Если добавленное значение — объект, форматируем его в несколько строк
