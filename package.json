@@ -14,9 +14,9 @@
   "author": "Dmitry Levchenko",
   "type": "module",
   "bin": {
-    "gendiff": "gendiff.js"
+    "gendiff": "bin/gendiff.js"
   },
-  "main": "gendiff.js",
+  "main": "src/genDiff.js",
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "lint": "eslint ."

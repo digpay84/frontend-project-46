@@ -3,7 +3,8 @@
     "allow": [
       "Bash(node *)",
       "Bash(npm test)",
-      "Bash(mkdir *)"
+      "Bash(mkdir *)",
+      "Bash(npm link)"
     ]
   },
   "$version": 3

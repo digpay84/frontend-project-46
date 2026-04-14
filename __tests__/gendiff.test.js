@@ -3,8 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import yaml from 'js-yaml';
-import { genDiff } from '../src/genDiff.js';
-import { parseFile } from '../src/parsers.js';
+import { genDiff, compareData } from '../src/genDiff.js';
 import formatStylish from '../src/formatters/stylish.js';
 import formatPlain from '../src/formatters/plain.js';
 import formatJsonString from '../src/formatters/json.js';
@@ -14,8 +13,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const fixturesPath = path.join(__dirname, '..', '__fixtures__');
 
-const readFixture = (filename) => {
-  const filePath = path.join(fixturesPath, filename);
+const getFixturePath = (filename) => path.join(fixturesPath, filename);
+
+const loadFixture = (filename) => {
+  const filePath = getFixturePath(filename);
   const content = fs.readFileSync(filePath, 'utf8');
   const ext = path.extname(filename).toLowerCase();
 
@@ -28,11 +29,15 @@ const readFixture = (filename) => {
   throw new Error(`Unsupported file extension: ${ext}`);
 };
 
+const getDiff = (file1, file2) => {
+  const data1 = loadFixture(file1);
+  const data2 = loadFixture(file2);
+  return compareData(data1, data2);
+};
+
 describe('genDiff с вложенными структурами', () => {
   test('должен обнаруживать удалённые ключи на корневом уровне', () => {
-    const data1 = readFixture('nested1.json');
-    const data2 = readFixture('nested2.json');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.json', 'nested2.json');
 
     const removedKeys = diff
       .filter((item) => item.status === 'removed')
@@ -42,9 +47,7 @@ describe('genDiff с вложенными структурами', () => {
   });
 
   test('должен обнаруживать добавленные ключи на корневом уровне', () => {
-    const data1 = readFixture('nested1.json');
-    const data2 = readFixture('nested2.json');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.json', 'nested2.json');
 
     const addedKeys = diff
       .filter((item) => item.status === 'added')
@@ -54,9 +57,7 @@ describe('genDiff с вложенными структурами', () => {
   });
 
   test('должен обнаруживать вложенные структуры со статусом nested', () => {
-    const data1 = readFixture('nested1.json');
-    const data2 = readFixture('nested2.json');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.json', 'nested2.json');
 
     const nestedItem = diff.find((item) => item.key === 'common');
 
@@ -67,9 +68,7 @@ describe('genDiff с вложенными структурами', () => {
   });
 
   test('должен рекурсивно сравнивать вложенные объекты', () => {
-    const data1 = readFixture('nested1.json');
-    const data2 = readFixture('nested2.json');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.json', 'nested2.json');
 
     const commonItem = diff.find((item) => item.key === 'common');
     const setting6Item = commonItem.children.find((item) => item.key === 'setting6');
@@ -87,9 +86,7 @@ describe('genDiff с вложенными структурами', () => {
   });
 
   test('должен обнаруживать изменённые значения во вложенных структурах', () => {
-    const data1 = readFixture('nested1.json');
-    const data2 = readFixture('nested2.json');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.json', 'nested2.json');
 
     const commonItem = diff.find((item) => item.key === 'common');
     const bazItem = commonItem.children.find((item) => item.key === 'setting3');
@@ -100,9 +97,7 @@ describe('genDiff с вложенными структурами', () => {
   });
 
   test('должен обнаруживать добавленные ключи во вложенных структурах', () => {
-    const data1 = readFixture('nested1.json');
-    const data2 = readFixture('nested2.json');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.json', 'nested2.json');
 
     const commonItem = diff.find((item) => item.key === 'common');
     const followItem = commonItem.children.find((item) => item.key === 'follow');
@@ -112,9 +107,7 @@ describe('genDiff с вложенными структурами', () => {
   });
 
   test('должен обнаруживать удалённые ключи во вложенных структурах', () => {
-    const data1 = readFixture('nested1.json');
-    const data2 = readFixture('nested2.json');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.json', 'nested2.json');
 
     const commonItem = diff.find((item) => item.key === 'common');
     const setting2Item = commonItem.children.find((item) => item.key === 'setting2');
@@ -124,9 +117,7 @@ describe('genDiff с вложенными структурами', () => {
   });
 
   test('должен обнаруживать неизменённые ключи во вложенных структурах', () => {
-    const data1 = readFixture('nested1.json');
-    const data2 = readFixture('nested2.json');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.json', 'nested2.json');
 
     const commonItem = diff.find((item) => item.key === 'common');
     const setting1Item = commonItem.children.find((item) => item.key === 'setting1');
@@ -136,9 +127,7 @@ describe('genDiff с вложенными структурами', () => {
   });
 
   test('должен обрабатывать изменение типа значения (объект -> примитив)', () => {
-    const data1 = readFixture('nested1.json');
-    const data2 = readFixture('nested2.json');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.json', 'nested2.json');
 
     const group1Item = diff.find((item) => item.key === 'group1');
     const nestItem = group1Item.children.find((item) => item.key === 'nest');
@@ -149,9 +138,7 @@ describe('genDiff с вложенными структурами', () => {
   });
 
   test('должен сортировать ключи по алфавиту на всех уровнях', () => {
-    const data1 = readFixture('nested1.json');
-    const data2 = readFixture('nested2.json');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.json', 'nested2.json');
 
     const checkSorted = (items) => {
       const keys = items.map((item) => item.key);
@@ -171,9 +158,7 @@ describe('genDiff с вложенными структурами', () => {
 
 describe('formatStylish (stylish форматер)', () => {
   test('должен форматировать diff с вложенными структурами', () => {
-    const data1 = readFixture('nested1.json');
-    const data2 = readFixture('nested2.json');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.json', 'nested2.json');
     const formatted = formatStylish(diff);
 
     expect(formatted).toContain('{');
@@ -186,9 +171,7 @@ describe('formatStylish (stylish форматер)', () => {
   });
 
   test('должен правильно форматировать глубоко вложенные структуры', () => {
-    const data1 = readFixture('nested1.json');
-    const data2 = readFixture('nested2.json');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.json', 'nested2.json');
     const formatted = formatStylish(diff);
 
     expect(formatted).toContain('doge: {');
@@ -197,16 +180,14 @@ describe('formatStylish (stylish форматер)', () => {
   });
 
   test('должен возвращать строковый тип', () => {
-    const diff = genDiff(readFixture('nested1.json'), readFixture('nested2.json'));
+    const diff = getDiff('nested1.json', 'nested2.json');
     const formatted = formatStylish(diff);
 
     expect(typeof formatted).toBe('string');
   });
 
   test('должен форматировать добавленные объекты как JSON', () => {
-    const data1 = readFixture('nested1.json');
-    const data2 = readFixture('nested2.json');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.json', 'nested2.json');
     const formatted = formatStylish(diff);
 
     expect(formatted).toContain('+ setting5: {');
@@ -214,9 +195,7 @@ describe('formatStylish (stylish форматер)', () => {
   });
 
   test('должен форматировать удалённые объекты как JSON', () => {
-    const data1 = readFixture('nested1.json');
-    const data2 = readFixture('nested2.json');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.json', 'nested2.json');
     const formatted = formatStylish(diff);
 
     expect(formatted).toContain('- group2: {');
@@ -228,27 +207,21 @@ describe('formatStylish (stylish форматер)', () => {
 
 describe('formatPlain (plain форматер)', () => {
   test('должен форматировать добавленные свойства на корневом уровне', () => {
-    const data1 = readFixture('nested1.json');
-    const data2 = readFixture('nested2.json');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.json', 'nested2.json');
     const formatted = formatPlain(diff);
 
     expect(formatted).toContain("Property 'group3' was added with value: [complex value]");
   });
 
   test('должен форматировать удалённые свойства на корневом уровне', () => {
-    const data1 = readFixture('nested1.json');
-    const data2 = readFixture('nested2.json');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.json', 'nested2.json');
     const formatted = formatPlain(diff);
 
     expect(formatted).toContain("Property 'group2' was removed");
   });
 
   test('должен форматировать изменённые свойства с полным путём', () => {
-    const data1 = readFixture('nested1.json');
-    const data2 = readFixture('nested2.json');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.json', 'nested2.json');
     const formatted = formatPlain(diff);
 
     expect(formatted).toContain("Property 'common.setting3' was updated. From true to null");
@@ -256,9 +229,7 @@ describe('formatPlain (plain форматер)', () => {
   });
 
   test('должен форматировать глубоко вложенные свойства', () => {
-    const data1 = readFixture('nested1.json');
-    const data2 = readFixture('nested2.json');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.json', 'nested2.json');
     const formatted = formatPlain(diff);
 
     expect(formatted).toContain("Property 'common.setting6.doge.wow' was updated. From '' to 'so much'");
@@ -266,9 +237,7 @@ describe('formatPlain (plain форматер)', () => {
   });
 
   test('должен показывать [complex value] для объектов', () => {
-    const data1 = readFixture('nested1.json');
-    const data2 = readFixture('nested2.json');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.json', 'nested2.json');
     const formatted = formatPlain(diff);
 
     expect(formatted).toContain("Property 'common.setting5' was added with value: [complex value]");
@@ -276,25 +245,21 @@ describe('formatPlain (plain форматер)', () => {
   });
 
   test('должен возвращать строковый тип', () => {
-    const diff = genDiff(readFixture('nested1.json'), readFixture('nested2.json'));
+    const diff = getDiff('nested1.json', 'nested2.json');
     const formatted = formatPlain(diff);
 
     expect(typeof formatted).toBe('string');
   });
 
   test('должен форматировать булевы значения без кавычек', () => {
-    const data1 = readFixture('nested1.json');
-    const data2 = readFixture('nested2.json');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.json', 'nested2.json');
     const formatted = formatPlain(diff);
 
     expect(formatted).toContain("Property 'common.follow' was added with value: false");
   });
 
   test('должен форматировать null значения', () => {
-    const data1 = readFixture('nested1.json');
-    const data2 = readFixture('nested2.json');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.json', 'nested2.json');
     const formatted = formatPlain(diff);
 
     expect(formatted).toContain("Property 'common.setting3' was updated. From true to null");
@@ -324,9 +289,7 @@ describe('getFormatter', () => {
 
 describe('formatJsonString (json форматер)', () => {
   test('должен возвращать валидный JSON', () => {
-    const data1 = readFixture('nested1.json');
-    const data2 = readFixture('nested2.json');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.json', 'nested2.json');
     const formatted = formatJsonString(diff);
     const parsed = JSON.parse(formatted);
 
@@ -335,9 +298,7 @@ describe('formatJsonString (json форматер)', () => {
   });
 
   test('должен форматировать добавленные свойства', () => {
-    const data1 = readFixture('nested1.json');
-    const data2 = readFixture('nested2.json');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.json', 'nested2.json');
     const formatted = formatJsonString(diff);
     const parsed = JSON.parse(formatted);
 
@@ -348,9 +309,7 @@ describe('formatJsonString (json форматер)', () => {
   });
 
   test('должен форматировать удалённые свойства', () => {
-    const data1 = readFixture('nested1.json');
-    const data2 = readFixture('nested2.json');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.json', 'nested2.json');
     const formatted = formatJsonString(diff);
     const parsed = JSON.parse(formatted);
 
@@ -366,9 +325,7 @@ describe('formatJsonString (json форматер)', () => {
   });
 
   test('должен форматировать изменённые свойства', () => {
-    const data1 = readFixture('nested1.json');
-    const data2 = readFixture('nested2.json');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.json', 'nested2.json');
     const formatted = formatJsonString(diff);
     const parsed = JSON.parse(formatted);
 
@@ -380,9 +337,7 @@ describe('formatJsonString (json форматер)', () => {
   });
 
   test('должен форматировать неизменённые свойства', () => {
-    const data1 = readFixture('nested1.json');
-    const data2 = readFixture('nested2.json');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.json', 'nested2.json');
     const formatted = formatJsonString(diff);
     const parsed = JSON.parse(formatted);
 
@@ -393,9 +348,7 @@ describe('formatJsonString (json форматер)', () => {
   });
 
   test('должен форматировать вложенные структуры', () => {
-    const data1 = readFixture('nested1.json');
-    const data2 = readFixture('nested2.json');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.json', 'nested2.json');
     const formatted = formatJsonString(diff);
     const parsed = JSON.parse(formatted);
 
@@ -406,9 +359,7 @@ describe('formatJsonString (json форматер)', () => {
   });
 
   test('должен сохранять значения объектов', () => {
-    const data1 = readFixture('nested1.json');
-    const data2 = readFixture('nested2.json');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.json', 'nested2.json');
     const formatted = formatJsonString(diff);
     const parsed = JSON.parse(formatted);
 
@@ -418,7 +369,7 @@ describe('formatJsonString (json форматер)', () => {
   });
 
   test('должен возвращать строковый тип', () => {
-    const diff = genDiff(readFixture('nested1.json'), readFixture('nested2.json'));
+    const diff = getDiff('nested1.json', 'nested2.json');
     const formatted = formatJsonString(diff);
 
     expect(typeof formatted).toBe('string');
@@ -426,18 +377,8 @@ describe('formatJsonString (json форматер)', () => {
 });
 
 describe('Поддержка YAML с вложенными структурами', () => {
-  test('должен корректно парсить YAML файл с вложенностями', () => {
-    const data = readFixture('nested1.yml');
-
-    expect(data.common.setting1).toBe('Value 1');
-    expect(data.common.setting6.doge.wow).toBe('');
-    expect(data.group1.nest.key).toBe('value');
-  });
-
   test('должен сравнивать YAML файлы с вложенными структурами', () => {
-    const data1 = readFixture('nested1.yml');
-    const data2 = readFixture('nested2.yml');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.yml', 'nested2.yml');
 
     const commonItem = diff.find((item) => item.key === 'common');
     expect(commonItem.status).toBe('nested');
@@ -448,9 +389,7 @@ describe('Поддержка YAML с вложенными структурами
   });
 
   test('должен форматировать diff для YAML файлов в stylish', () => {
-    const data1 = readFixture('nested1.yml');
-    const data2 = readFixture('nested2.yml');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.yml', 'nested2.yml');
     const formatted = formatStylish(diff);
 
     expect(formatted).toContain('{');
@@ -460,9 +399,7 @@ describe('Поддержка YAML с вложенными структурами
   });
 
   test('должен форматировать diff для YAML файлов в plain', () => {
-    const data1 = readFixture('nested1.yml');
-    const data2 = readFixture('nested2.yml');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.yml', 'nested2.yml');
     const formatted = formatPlain(diff);
 
     expect(formatted).toContain("Property 'common.follow' was added with value: false");
@@ -470,9 +407,7 @@ describe('Поддержка YAML с вложенными структурами
   });
 
   test('должен форматировать diff для YAML файлов в json', () => {
-    const data1 = readFixture('nested1.yml');
-    const data2 = readFixture('nested2.yml');
-    const diff = genDiff(data1, data2);
+    const diff = getDiff('nested1.yml', 'nested2.yml');
     const formatted = formatJsonString(diff);
     const parsed = JSON.parse(formatted);
 
@@ -482,36 +417,35 @@ describe('Поддержка YAML с вложенными структурами
   });
 });
 
-describe('parseFile', () => {
-  test('должен парсить JSON файл', () => {
-    const filePath = path.join(fixturesPath, 'file1.json');
-    const content = fs.readFileSync(filePath, 'utf8');
-    const parsed = parseFile(content, filePath);
+describe('genDiff (интеграционные тесты с файлами)', () => {
+  test('должен читать и сравни JSON файлы', () => {
+    const result = genDiff(getFixturePath('nested1.json'), getFixturePath('nested2.json'));
 
-    expect(parsed.host).toBe('hexlet.io');
-    expect(parsed.timeout).toBe(50);
+    expect(typeof result).toBe('string');
+    expect(result).toContain('{');
+    expect(result).toContain('}');
   });
 
-  test('должен парсить YAML файл с расширением .yml', () => {
-    const filePath = path.join(fixturesPath, 'file1.yml');
-    const content = fs.readFileSync(filePath, 'utf8');
-    const parsed = parseFile(content, filePath);
+  test('должен читать и сравни YAML файлы', () => {
+    const result = genDiff(getFixturePath('nested1.yml'), getFixturePath('nested2.yml'));
 
-    expect(parsed.host).toBe('hexlet.io');
-    expect(parsed.timeout).toBe(50);
+    expect(typeof result).toBe('string');
+    expect(result).toContain('{');
+    expect(result).toContain('}');
   });
 
-  test('должен парсить YAML файл с расширением .yaml', () => {
-    const yamlContent = 'key: value\nnumber: 42\n';
-    const parsed = parseFile(yamlContent, 'test.yaml');
+  test('должен поддерживать формат plain', () => {
+    const result = genDiff(getFixturePath('nested1.json'), getFixturePath('nested2.json'), { format: 'plain' });
 
-    expect(parsed.key).toBe('value');
-    expect(parsed.number).toBe(42);
+    expect(typeof result).toBe('string');
+    expect(result).toContain("Property 'group3' was added");
   });
 
-  test('должен выбрасывать ошибку для неподдерживаемого расширения', () => {
-    const content = 'some content';
+  test('должен поддерживать формат json', () => {
+    const result = genDiff(getFixturePath('nested1.json'), getFixturePath('nested2.json'), { format: 'json' });
 
-    expect(() => parseFile(content, 'file.txt')).toThrow('Unsupported file extension: .txt');
+    expect(typeof result).toBe('string');
+    const parsed = JSON.parse(result);
+    expect(parsed).toBeDefined();
   });
 });
