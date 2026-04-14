@@ -15,7 +15,7 @@ const fixturesPath = path.join(__dirname, '..', '__fixtures__')
 
 const getFixturePath = filename => path.join(fixturesPath, filename)
 
-const loadFixture = filename => {
+const loadFixture = (filename) => {
   const filePath = getFixturePath(filename)
   const content = fs.readFileSync(filePath, 'utf8')
   const ext = path.extname(filename).toLowerCase()
@@ -140,12 +140,12 @@ describe('genDiff с вложенными структурами', () => {
   test('должен сортировать ключи по алфавиту на всех уровнях', () => {
     const diff = getDiff('nested1.json', 'nested2.json')
 
-    const checkSorted = items => {
+    const checkSorted = (items) => {
       const keys = items.map(item => item.key)
       const sortedKeys = [...keys].sort()
       expect(keys).toEqual(sortedKeys)
 
-      items.forEach(item => {
+      items.forEach((item) => {
         if (item.status === 'nested' && item.children) {
           checkSorted(item.children)
         }
