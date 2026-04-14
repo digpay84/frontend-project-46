@@ -1,20 +1,18 @@
-import globals from 'globals'
-import js from '@eslint/js'
+import stylistic from '@stylistic/eslint-plugin'
 
 export default [
-  js.configs.recommended,
   {
-    languageOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'module',
-      globals: {
-        ...globals.node,
-      },
+    plugins: {
+      '@stylistic': stylistic,
     },
     rules: {
-      indent: ['error', 2],
-      'no-unused-vars': 'warn',
-      semi: ['error', 'never'],
+      '@stylistic/quotes': ['error', 'single'],
+      '@stylistic/eol-last': ['error', 'always'],
+      '@stylistic/semi': ['error', 'never'],
+      '@stylistic/indent': ['error', 2],
+      '@stylistic/no-trailing-spaces': ['error', { skipBlankLines: false, ignoreComments: false }],
+      '@stylistic/comma-dangle': ['error', 'always-multiline'],
+      '@stylistic/quote-props': ['error', 'consistent-as-needed'],
     },
   },
 ]

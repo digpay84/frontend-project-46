@@ -210,38 +210,38 @@ describe('formatPlain (plain форматер)', () => {
     const diff = getDiff('nested1.json', 'nested2.json')
     const formatted = formatPlain(diff)
 
-    expect(formatted).toContain("Property 'group3' was added with value: [complex value]")
+    expect(formatted).toContain('Property \'group3\' was added with value: [complex value]')
   })
 
   test('должен форматировать удалённые свойства на корневом уровне', () => {
     const diff = getDiff('nested1.json', 'nested2.json')
     const formatted = formatPlain(diff)
 
-    expect(formatted).toContain("Property 'group2' was removed")
+    expect(formatted).toContain('Property \'group2\' was removed')
   })
 
   test('должен форматировать изменённые свойства с полным путём', () => {
     const diff = getDiff('nested1.json', 'nested2.json')
     const formatted = formatPlain(diff)
 
-    expect(formatted).toContain("Property 'common.setting3' was updated. From true to null")
-    expect(formatted).toContain("Property 'group1.baz' was updated. From 'bas' to 'bars'")
+    expect(formatted).toContain('Property \'common.setting3\' was updated. From true to null')
+    expect(formatted).toContain('Property \'group1.baz\' was updated. From \'bas\' to \'bars\'')
   })
 
   test('должен форматировать глубоко вложенные свойства', () => {
     const diff = getDiff('nested1.json', 'nested2.json')
     const formatted = formatPlain(diff)
 
-    expect(formatted).toContain("Property 'common.setting6.doge.wow' was updated. From '' to 'so much'")
-    expect(formatted).toContain("Property 'common.setting6.ops' was added with value: 'vops'")
+    expect(formatted).toContain('Property \'common.setting6.doge.wow\' was updated. From \'\' to \'so much\'')
+    expect(formatted).toContain('Property \'common.setting6.ops\' was added with value: \'vops\'')
   })
 
   test('должен показывать [complex value] для объектов', () => {
     const diff = getDiff('nested1.json', 'nested2.json')
     const formatted = formatPlain(diff)
 
-    expect(formatted).toContain("Property 'common.setting5' was added with value: [complex value]")
-    expect(formatted).toContain("Property 'group1.nest' was updated. From [complex value] to 'str'")
+    expect(formatted).toContain('Property \'common.setting5\' was added with value: [complex value]')
+    expect(formatted).toContain('Property \'group1.nest\' was updated. From [complex value] to \'str\'')
   })
 
   test('должен возвращать строковый тип', () => {
@@ -255,14 +255,14 @@ describe('formatPlain (plain форматер)', () => {
     const diff = getDiff('nested1.json', 'nested2.json')
     const formatted = formatPlain(diff)
 
-    expect(formatted).toContain("Property 'common.follow' was added with value: false")
+    expect(formatted).toContain('Property \'common.follow\' was added with value: false')
   })
 
   test('должен форматировать null значения', () => {
     const diff = getDiff('nested1.json', 'nested2.json')
     const formatted = formatPlain(diff)
 
-    expect(formatted).toContain("Property 'common.setting3' was updated. From true to null")
+    expect(formatted).toContain('Property \'common.setting3\' was updated. From true to null')
   })
 })
 
@@ -402,8 +402,8 @@ describe('Поддержка YAML с вложенными структурами
     const diff = getDiff('nested1.yml', 'nested2.yml')
     const formatted = formatPlain(diff)
 
-    expect(formatted).toContain("Property 'common.follow' was added with value: false")
-    expect(formatted).toContain("Property 'group2' was removed")
+    expect(formatted).toContain('Property \'common.follow\' was added with value: false')
+    expect(formatted).toContain('Property \'group2\' was removed')
   })
 
   test('должен форматировать diff для YAML файлов в json', () => {
@@ -438,7 +438,7 @@ describe('genDiff (интеграционные тесты с файлами)', 
     const result = genDiff(getFixturePath('nested1.json'), getFixturePath('nested2.json'), 'plain')
 
     expect(typeof result).toBe('string')
-    expect(result).toContain("Property 'group3' was added")
+    expect(result).toContain('Property \'group3\' was added')
   })
 
   test('должен поддерживать формат json', () => {
