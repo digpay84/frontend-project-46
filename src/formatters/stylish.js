@@ -56,7 +56,6 @@ function formatNode(item, depth) {
   const getValueIndent = d => ' '.repeat(d * indentSize + 2)
 
   if (item.status === 'nested') {
-
     const formattedChildren = formatStylish(item.children, depth + 1)
     return [
       `${getKeyIndent(depth)}${item.key}: {`,
@@ -64,7 +63,6 @@ function formatNode(item, depth) {
       `${getKeyIndent(depth)}}`,
     ]
   }
-
 
   const valueIndent = getValueIndent(depth)
   // Для содержимого объектов используем тот же отступ что и valueIndent
@@ -121,9 +119,8 @@ function formatNode(item, depth) {
         result.push(`${valueIndent}+ ${item.key}: {`)
         result.push(addedLines)
         result.push(`${valueIndent}  }`)
-      } else {
+      } else
         result.push(`${valueIndent}+ ${item.key}: ${formatPrimitiveValue(item.value2)}`)
-      }
 
       return result
     }

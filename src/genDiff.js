@@ -29,7 +29,7 @@ function compareData(data1, data2) {
   const allKeys = _.union(keys1, keys2)
   const sortedKeys = _.sortBy(allKeys)
 
-  const result = sortedKeys.map(key => {
+  const result = sortedKeys.map((key) => {
     const hasKey1 = _.has(data1, key)
     const hasKey2 = _.has(data2, key)
 
