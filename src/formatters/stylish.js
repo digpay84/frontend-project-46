@@ -119,8 +119,10 @@ function formatNode(item, depth) {
         result.push(`${valueIndent}+ ${item.key}: {`)
         result.push(addedLines)
         result.push(`${valueIndent}  }`)
-      } else
+      }
+      else {
         result.push(`${valueIndent}+ ${item.key}: ${formatPrimitiveValue(item.value2)}`)
+      }
 
       return result
     }
