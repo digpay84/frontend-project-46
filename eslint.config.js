@@ -13,6 +13,7 @@ export default [
       '@stylistic/no-trailing-spaces': ['error', { skipBlankLines: false, ignoreComments: false }],
       '@stylistic/comma-dangle': ['error', 'always-multiline'],
       '@stylistic/quote-props': ['error', 'consistent-as-needed'],
+      '@stylistic/arrow-parens': ['error', 'as-needed'],
     },
   },
 ]

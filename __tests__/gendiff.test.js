@@ -13,9 +13,9 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const fixturesPath = path.join(__dirname, '..', '__fixtures__')
 
-const getFixturePath = (filename) => path.join(fixturesPath, filename)
+const getFixturePath = filename => path.join(fixturesPath, filename)
 
-const loadFixture = (filename) => {
+const loadFixture = filename => {
   const filePath = getFixturePath(filename)
   const content = fs.readFileSync(filePath, 'utf8')
   const ext = path.extname(filename).toLowerCase()
@@ -40,8 +40,8 @@ describe('genDiff с вложенными структурами', () => {
     const diff = getDiff('nested1.json', 'nested2.json')
 
     const removedKeys = diff
-      .filter((item) => item.status === 'removed')
-      .map((item) => item.key)
+      .filter(item => item.status === 'removed')
+      .map(item => item.key)
 
     expect(removedKeys).toContain('group2')
   })
@@ -50,8 +50,8 @@ describe('genDiff с вложенными структурами', () => {
     const diff = getDiff('nested1.json', 'nested2.json')
 
     const addedKeys = diff
-      .filter((item) => item.status === 'added')
-      .map((item) => item.key)
+      .filter(item => item.status === 'added')
+      .map(item => item.key)
 
     expect(addedKeys).toContain('group3')
   })
@@ -59,7 +59,7 @@ describe('genDiff с вложенными структурами', () => {
   test('должен обнаруживать вложенные структуры со статусом nested', () => {
     const diff = getDiff('nested1.json', 'nested2.json')
 
-    const nestedItem = diff.find((item) => item.key === 'common')
+    const nestedItem = diff.find(item => item.key === 'common')
 
     expect(nestedItem).toBeDefined()
     expect(nestedItem.status).toBe('nested')
@@ -70,16 +70,16 @@ describe('genDiff с вложенными структурами', () => {
   test('должен рекурсивно сравнивать вложенные объекты', () => {
     const diff = getDiff('nested1.json', 'nested2.json')
 
-    const commonItem = diff.find((item) => item.key === 'common')
-    const setting6Item = commonItem.children.find((item) => item.key === 'setting6')
+    const commonItem = diff.find(item => item.key === 'common')
+    const setting6Item = commonItem.children.find(item => item.key === 'setting6')
 
     expect(setting6Item.status).toBe('nested')
     expect(setting6Item.children).toBeDefined()
 
-    const dogeItem = setting6Item.children.find((item) => item.key === 'doge')
+    const dogeItem = setting6Item.children.find(item => item.key === 'doge')
     expect(dogeItem.status).toBe('nested')
 
-    const wowItem = dogeItem.children.find((item) => item.key === 'wow')
+    const wowItem = dogeItem.children.find(item => item.key === 'wow')
     expect(wowItem.status).toBe('changed')
     expect(wowItem.value1).toBe('')
     expect(wowItem.value2).toBe('so much')
@@ -88,8 +88,8 @@ describe('genDiff с вложенными структурами', () => {
   test('должен обнаруживать изменённые значения во вложенных структурах', () => {
     const diff = getDiff('nested1.json', 'nested2.json')
 
-    const commonItem = diff.find((item) => item.key === 'common')
-    const bazItem = commonItem.children.find((item) => item.key === 'setting3')
+    const commonItem = diff.find(item => item.key === 'common')
+    const bazItem = commonItem.children.find(item => item.key === 'setting3')
 
     expect(bazItem.status).toBe('changed')
     expect(bazItem.value1).toBe(true)
@@ -99,8 +99,8 @@ describe('genDiff с вложенными структурами', () => {
   test('должен обнаруживать добавленные ключи во вложенных структурах', () => {
     const diff = getDiff('nested1.json', 'nested2.json')
 
-    const commonItem = diff.find((item) => item.key === 'common')
-    const followItem = commonItem.children.find((item) => item.key === 'follow')
+    const commonItem = diff.find(item => item.key === 'common')
+    const followItem = commonItem.children.find(item => item.key === 'follow')
 
     expect(followItem.status).toBe('added')
     expect(followItem.value).toBe(false)
@@ -109,8 +109,8 @@ describe('genDiff с вложенными структурами', () => {
   test('должен обнаруживать удалённые ключи во вложенных структурах', () => {
     const diff = getDiff('nested1.json', 'nested2.json')
 
-    const commonItem = diff.find((item) => item.key === 'common')
-    const setting2Item = commonItem.children.find((item) => item.key === 'setting2')
+    const commonItem = diff.find(item => item.key === 'common')
+    const setting2Item = commonItem.children.find(item => item.key === 'setting2')
 
     expect(setting2Item.status).toBe('removed')
     expect(setting2Item.value).toBe(200)
@@ -119,8 +119,8 @@ describe('genDiff с вложенными структурами', () => {
   test('должен обнаруживать неизменённые ключи во вложенных структурах', () => {
     const diff = getDiff('nested1.json', 'nested2.json')
 
-    const commonItem = diff.find((item) => item.key === 'common')
-    const setting1Item = commonItem.children.find((item) => item.key === 'setting1')
+    const commonItem = diff.find(item => item.key === 'common')
+    const setting1Item = commonItem.children.find(item => item.key === 'setting1')
 
     expect(setting1Item.status).toBe('unchanged')
     expect(setting1Item.value).toBe('Value 1')
@@ -129,8 +129,8 @@ describe('genDiff с вложенными структурами', () => {
   test('должен обрабатывать изменение типа значения (объект -> примитив)', () => {
     const diff = getDiff('nested1.json', 'nested2.json')
 
-    const group1Item = diff.find((item) => item.key === 'group1')
-    const nestItem = group1Item.children.find((item) => item.key === 'nest')
+    const group1Item = diff.find(item => item.key === 'group1')
+    const nestItem = group1Item.children.find(item => item.key === 'nest')
 
     expect(nestItem.status).toBe('changed')
     expect(nestItem.value1).toEqual({ key: 'value' })
@@ -140,12 +140,12 @@ describe('genDiff с вложенными структурами', () => {
   test('должен сортировать ключи по алфавиту на всех уровнях', () => {
     const diff = getDiff('nested1.json', 'nested2.json')
 
-    const checkSorted = (items) => {
-      const keys = items.map((item) => item.key)
+    const checkSorted = items => {
+      const keys = items.map(item => item.key)
       const sortedKeys = [...keys].sort()
       expect(keys).toEqual(sortedKeys)
 
-      items.forEach((item) => {
+      items.forEach(item => {
         if (item.status === 'nested' && item.children) {
           checkSorted(item.children)
         }
@@ -380,10 +380,10 @@ describe('Поддержка YAML с вложенными структурами
   test('должен сравнивать YAML файлы с вложенными структурами', () => {
     const diff = getDiff('nested1.yml', 'nested2.yml')
 
-    const commonItem = diff.find((item) => item.key === 'common')
+    const commonItem = diff.find(item => item.key === 'common')
     expect(commonItem.status).toBe('nested')
 
-    const followItem = commonItem.children.find((item) => item.key === 'follow')
+    const followItem = commonItem.children.find(item => item.key === 'follow')
     expect(followItem.status).toBe('added')
     expect(followItem.value).toBe(false)
   })

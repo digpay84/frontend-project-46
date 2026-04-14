@@ -57,8 +57,8 @@ function formatNode(item, path) {
  */
 function formatPlain(diff, path = '') {
   const lines = diff
-    .flatMap((item) => formatNode(item, path))
-    .filter((line) => line !== null)
+    .flatMap(item => formatNode(item, path))
+    .filter(line => line !== null)
 
   return lines.join('\n')
 }

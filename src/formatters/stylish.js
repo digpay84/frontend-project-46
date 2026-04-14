@@ -52,8 +52,8 @@ function formatObjectMultiline(obj, contentIndent) {
  */
 function formatNode(item, depth) {
   const indentSize = 4
-  const getKeyIndent = (d) => ' '.repeat((d + 1) * indentSize)
-  const getValueIndent = (d) => ' '.repeat(d * indentSize + 2)
+  const getKeyIndent = d => ' '.repeat((d + 1) * indentSize)
+  const getValueIndent = d => ' '.repeat(d * indentSize + 2)
 
   if (item.status === 'nested') {
 
@@ -155,7 +155,7 @@ function formatNode(item, depth) {
  * @returns {string} - отформатированная строка
  */
 function formatStylish(diff, depth = 0) {
-  const lines = diff.flatMap((item) => formatNode(item, depth))
+  const lines = diff.flatMap(item => formatNode(item, depth))
 
   // Если это корневой уровень, оборачиваем в фигурные скобки
   if (depth === 0) {
