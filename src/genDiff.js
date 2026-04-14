@@ -65,14 +65,14 @@ function compareData(data1, data2) {
  * @param {Object} options - опции форматирования
  * @returns {string} - отформатированный результат
  */
-function genDiff(filepath1, filepath2, options = {}) {
+function genDiff(filepath1, filepath2, format) {
   const file1 = fs.readFileSync(filepath1, 'utf8');
   const file2 = fs.readFileSync(filepath2, 'utf8');
   const data1 = parseFile(file1, filepath1);
   const data2 = parseFile(file2, filepath2);
 
   const diff = compareData(data1, data2);
-  const formatter = getFormatter(options.format || 'stylish');
+  const formatter = getFormatter(format || 'stylish');
   return formatter(diff);
 }
 
