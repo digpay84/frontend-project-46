@@ -5,32 +5,32 @@
  */
 function convertNode(item) {
   if (item.status === 'nested') {
-    const childrenObj = formatJson(item.children);
+    const childrenObj = formatJson(item.children)
     return {
       status: item.status,
       value: childrenObj,
-    };
+    }
   }
 
   if (item.status === 'added') {
     return {
       status: item.status,
       value: item.value,
-    };
+    }
   }
 
   if (item.status === 'removed') {
     return {
       status: item.status,
       value: item.value,
-    };
+    }
   }
 
   if (item.status === 'unchanged') {
     return {
       status: item.status,
       value: item.value,
-    };
+    }
   }
 
   if (item.status === 'changed') {
@@ -38,10 +38,10 @@ function convertNode(item) {
       status: item.status,
       value1: item.value1,
       value2: item.value2,
-    };
+    }
   }
 
-  return {};
+  return {}
 }
 
 /**
@@ -51,9 +51,9 @@ function convertNode(item) {
  */
 function formatJson(diff) {
   return diff.reduce((acc, item) => {
-    acc[item.key] = convertNode(item);
-    return acc;
-  }, {});
+    acc[item.key] = convertNode(item)
+    return acc
+  }, {})
 }
 
 /**
@@ -62,9 +62,9 @@ function formatJson(diff) {
  * @returns {string} - JSON строка
  */
 function formatJsonString(diff) {
-  const result = formatJson(diff);
-  return JSON.stringify(result, null, 2);
+  const result = formatJson(diff)
+  return JSON.stringify(result, null, 2)
 }
 
-export { formatJson, formatJsonString };
-export default formatJsonString;
+export { formatJson, formatJsonString }
+export default formatJsonString

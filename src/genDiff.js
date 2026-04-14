@@ -1,8 +1,8 @@
-import _ from 'lodash';
-import formatStylish from './formatters/stylish.js';
-import { getFormatter } from '../src/formatters/index.js';
-import { parseFile } from '../src/parsers.js';
-import fs from 'node:fs';
+import _ from 'lodash'
+import formatStylish from './formatters/stylish.js'
+import { getFormatter } from '../src/formatters/index.js'
+import { parseFile } from '../src/parsers.js'
+import fs from 'node:fs'
 
 /**
  * Сравнивает два значения и возвращает информацию о различиях
@@ -12,9 +12,9 @@ import fs from 'node:fs';
  */
 function compareValues(value1, value2) {
   if (_.isEqual(value1, value2)) {
-    return { status: 'unchanged', value: value1 };
+    return { status: 'unchanged', value: value1 }
   }
-  return { status: 'changed', value1, value2 };
+  return { status: 'changed', value1, value2 }
 }
 
 /**
@@ -24,24 +24,24 @@ function compareValues(value1, value2) {
  * @returns {Array} - массив объектов с информацией о различиях
  */
 function compareData(data1, data2) {
-  const keys1 = Object.keys(data1);
-  const keys2 = Object.keys(data2);
-  const allKeys = _.union(keys1, keys2);
-  const sortedKeys = _.sortBy(allKeys);
+  const keys1 = Object.keys(data1)
+  const keys2 = Object.keys(data2)
+  const allKeys = _.union(keys1, keys2)
+  const sortedKeys = _.sortBy(allKeys)
 
   const result = sortedKeys.map((key) => {
-    const hasKey1 = _.has(data1, key);
-    const hasKey2 = _.has(data2, key);
+    const hasKey1 = _.has(data1, key)
+    const hasKey2 = _.has(data2, key)
 
     if (!hasKey1) {
-      return { key, value: data2[key], status: 'added' };
+      return { key, value: data2[key], status: 'added' }
     }
     if (!hasKey2) {
-      return { key, value: data1[key], status: 'removed' };
+      return { key, value: data1[key], status: 'removed' }
     }
 
-    const value1 = data1[key];
-    const value2 = data2[key];
+    const value1 = data1[key]
+    const value2 = data2[key]
 
     // Если оба значения - объекты (не массивы и не null), рекурсивно сравниваем
     if (_.isPlainObject(value1) && _.isPlainObject(value2)) {
@@ -49,13 +49,13 @@ function compareData(data1, data2) {
         key,
         status: 'nested',
         children: compareData(value1, value2),
-      };
+      }
     }
 
-    return { key, ...compareValues(value1, value2) };
-  });
+    return { key, ...compareValues(value1, value2) }
+  })
 
-  return result;
+  return result
 }
 
 /**
@@ -66,14 +66,14 @@ function compareData(data1, data2) {
  * @returns {string} - отформатированный результат
  */
 function genDiff(filepath1, filepath2, format) {
-  const file1 = fs.readFileSync(filepath1, 'utf8');
-  const file2 = fs.readFileSync(filepath2, 'utf8');
-  const data1 = parseFile(file1, filepath1);
-  const data2 = parseFile(file2, filepath2);
+  const file1 = fs.readFileSync(filepath1, 'utf8')
+  const file2 = fs.readFileSync(filepath2, 'utf8')
+  const data1 = parseFile(file1, filepath1)
+  const data2 = parseFile(file2, filepath2)
 
-  const diff = compareData(data1, data2);
-  const formatter = getFormatter(format || 'stylish');
-  return formatter(diff);
+  const diff = compareData(data1, data2)
+  const formatter = getFormatter(format || 'stylish')
+  return formatter(diff)
 }
 
 /**
@@ -82,8 +82,8 @@ function genDiff(filepath1, filepath2, format) {
  * @returns {string} - отформатированная строка
  */
 function formatDiff(diff) {
-  return formatStylish(diff);
+  return formatStylish(diff)
 }
 
-export { genDiff, formatDiff, compareData };
-export default genDiff;
+export { genDiff, formatDiff, compareData }
+export default genDiff
