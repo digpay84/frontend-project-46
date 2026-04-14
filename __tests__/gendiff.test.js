@@ -435,14 +435,14 @@ describe('genDiff (интеграционные тесты с файлами)', 
   });
 
   test('должен поддерживать формат plain', () => {
-    const result = genDiff(getFixturePath('nested1.json'), getFixturePath('nested2.json'), { format: 'plain' });
+    const result = genDiff(getFixturePath('nested1.json'), getFixturePath('nested2.json'), 'plain');
 
     expect(typeof result).toBe('string');
     expect(result).toContain("Property 'group3' was added");
   });
 
   test('должен поддерживать формат json', () => {
-    const result = genDiff(getFixturePath('nested1.json'), getFixturePath('nested2.json'), { format: 'json' });
+    const result = genDiff(getFixturePath('nested1.json'), getFixturePath('nested2.json'), 'json');
 
     expect(typeof result).toBe('string');
     const parsed = JSON.parse(result);
